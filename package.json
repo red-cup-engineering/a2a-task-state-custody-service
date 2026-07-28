@@ -1,0 +1,57 @@
+{
+  "name": "@red-cup-engineering/a2a-task-state-custody-service",
+  "version": "1.0.5",
+  "type": "module",
+  "description": "Network-authoritative A2A task-state custody and lookup over Cloudflare R2.",
+  "exports": {
+    ".": "./src/a2a-task-state-custody.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/a2a-task-state-custody.mjs && node --check test/a2a-task-state-custody.test.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@red-cup-engineering/resource-brokerage-service-section": "2.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/red-cup-engineering/resource-brokerage-service-section.git",
+    "directory": "services/a2a-task-state-custody-service"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "x-semiotic-voxel": {
+    "profile": "org.harmonious-union.semiotic-voxel.v1",
+    "owner": "red-cup-engineering",
+    "kind": "capability-cell",
+    "actor": "urn:ame:a2a-task-state-custody-service",
+    "operations": [
+      "a2a-task-state-custody-service"
+    ],
+    "capabilities": [
+      {
+        "capability": "a2a-task-state-custody-service",
+        "faces": [
+          "a2a-task-state-custody-service"
+        ]
+      }
+    ],
+    "package": "@red-cup-engineering/a2a-task-state-custody-service"
+  },
+  "x-agentic-metro-enterprise": {
+    "node-id": "a2a-task-state-custody-service",
+    "owners": [
+      "red-cup-engineering",
+      "resource-brokerage-service-section"
+    ],
+    "capability": "put, get, and list the current content-hashed A2A task projection in one purchased network carrier",
+    "localAuthority": false
+  },
+  "license": "UNLICENSED"
+}
