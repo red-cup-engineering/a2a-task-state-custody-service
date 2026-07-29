@@ -1,7 +1,5 @@
 import { createHash } from "node:crypto";
 import { gzipSync, gunzipSync } from "node:zlib";
-import { createR2SigV4Client, r2Configuration } from "@red-cup-engineering/resource-brokerage-service-section/src/r2-sigv4.js";
-import { createR2RestClient, r2RestConfiguration } from "@red-cup-engineering/resource-brokerage-service-section/src/r2-rest.js";
 
 const DEFAULT_PREFIX = "a2a-task-state/v2";
 const TERMINAL = new Set(["TASK_STATE_COMPLETED", "TASK_STATE_FAILED", "TASK_STATE_CANCELED", "TASK_STATE_INPUT_REQUIRED", "TASK_STATE_REJECTED", "TASK_STATE_AUTH_REQUIRED"]);
@@ -29,5 +27,6 @@ export function createA2aTaskStateCustody({client,prefix=DEFAULT_PREFIX}={}) {
   async function list({tenant=""}={}){const prefixForTenant=`${prefix}/${coordinate(tenant)}/`,keys=[];let continuationToken;do{const page=await client.list(prefixForTenant,continuationToken);keys.push(...page.keys);continuationToken=page.continuationToken;}while(continuationToken!==undefined);const grouped=new Map();for(const key of keys){const remote=await client.get(key);if(remote===null)continue;const value=decode(remote,{tenant});const values=grouped.get(value.taskId)??[];values.push(value);grouped.set(value.taskId,values);}return [...grouped.entries()].map(([taskId,versions])=>reduceVersions(versions,`${tenant}:${taskId}`));}
   return Object.freeze({put,get,list,inspect,reconcileEquivalent});
 }
-export function createA2aTaskStateCustodyFromEnvironment(environment=process.env,dependencies={}){const client=dependencies.client??(environment.CLOUDFLARE_R2_ACCESS_KEY_ID&&environment.CLOUDFLARE_R2_SECRET_ACCESS_KEY?(dependencies.createR2SigV4Client??createR2SigV4Client)(r2Configuration(environment),dependencies):(dependencies.createR2RestClient??createR2RestClient)(r2RestConfiguration(environment),dependencies));return createA2aTaskStateCustody({client,prefix:environment.A2A_TASK_STATE_R2_PREFIX??DEFAULT_PREFIX});}
+/** Retired: thin A2A state is projected through the on-chain membrane. */
+export function createA2aTaskStateCustodyFromEnvironment(){throw new Error("A2A task-state R2 custody is retired: provide a membrane-provided on-chain task source");}
 export const internals=Object.freeze({canonicalJson,contentBytes,versionKey});

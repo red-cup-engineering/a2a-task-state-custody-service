@@ -35,10 +35,11 @@ test("put then get returns the head version", async () => {
   assert.equal(head.envelope.task.status.state, "TASK_STATE_WORKING");
 });
 
-test("environment factory selects the R2 REST carrier when only an API token is available", () => {
-  const client = fakeR2();
-  const custody = createA2aTaskStateCustodyFromEnvironment({ API_KEY_CLOUDFLARE_R2_EDIT: "token" }, { createR2RestClient: () => client });
-  assert.equal(typeof custody.put, "function");
+test("environment factory retires R2 for thin task state", () => {
+  assert.throws(
+    () => createA2aTaskStateCustodyFromEnvironment({ API_KEY_CLOUDFLARE_R2_EDIT: "token" }),
+    /R2 custody is retired/u,
+  );
 });
 
 test("a terminal task state refuses to absorb a further transition", async () => {
