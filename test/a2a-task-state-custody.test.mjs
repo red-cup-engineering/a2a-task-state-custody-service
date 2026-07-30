@@ -91,7 +91,8 @@ test("invalid predecessor is quarantined without preventing valid replay", async
   const client = fakeR2(), custody = createA2aTaskStateCustody({ client });
   const valid = a2aTaskStateRecord(envelope("TASK_STATE_WORKING"));
   await custody.put({ taskId: "task-1", tenant: "tenant-a", ...valid });
-  const invalid = { type: "A2aTaskStateVersion", taskId: "task-legacy", tenant: "tenant-a", sha256: valid.sha256, predecessor: "legacy", envelope: { ...valid.envelope, task: { ...valid.envelope.task, id: "task-legacy" } } };
+  const legacy = a2aTaskStateRecord({ ...valid.envelope, task: { ...valid.envelope.task, id: "task-legacy" } });
+  const invalid = { type: "A2aTaskStateVersion", taskId: "task-legacy", tenant: "tenant-a", sha256: legacy.sha256, predecessor: "legacy", envelope: legacy.envelope };
   const legacyKey = "a2a-task-state/v2/" + createHash("sha256").update("tenant-a").digest("hex") + "/" + createHash("sha256").update("task-legacy").digest("hex") + "/legacy.a2a-task-state.json.gz";
   const body = gzipSync(Buffer.from(internals.canonicalJson(invalid) + "\n"));
   await client.putCurrent(legacyKey, { body, byteLength: body.length, sha256: createHash("sha256").update(body).digest("hex"), mediaType: "application/gzip" });
