@@ -86,3 +86,15 @@ test("inspect retains every fork branch without selecting a task head", async ()
   assert.equal(settled.envelope.task.metadata.reconciliation, "equivalent-terminal-outcome");
   assert.deepEqual(settled.predecessors, [first.sha256, branch.sha256].sort());
 });
+
+test("invalid predecessor is quarantined without preventing valid replay", async () => {
+  const client = fakeR2(), custody = createA2aTaskStateCustody({ client });
+  const valid = a2aTaskStateRecord(envelope("TASK_STATE_WORKING"));
+  await custody.put({ taskId: "task-1", tenant: "tenant-a", ...valid });
+  const invalid = { type: "A2aTaskStateVersion", taskId: "task-legacy", tenant: "tenant-a", sha256: valid.sha256, predecessor: "legacy", envelope: { ...valid.envelope, task: { ...valid.envelope.task, id: "task-legacy" } } };
+  const legacyKey = "a2a-task-state/v2/" + createHash("sha256").update("tenant-a").digest("hex") + "/" + createHash("sha256").update("task-legacy").digest("hex") + "/legacy.a2a-task-state.json.gz";
+  const body = gzipSync(Buffer.from(internals.canonicalJson(invalid) + "\n"));
+  await client.putCurrent(legacyKey, { body, byteLength: body.length, sha256: createHash("sha256").update(body).digest("hex"), mediaType: "application/gzip" });
+  assert.deepEqual((await custody.list({ tenant: "tenant-a" })).map((record) => record.taskId), ["task-1"]);
+  assert.equal((await custody.list({ tenant: "tenant-a" })).length, 1, "restart-safe repeated replay keeps the one valid task");
+});
