@@ -1,6 +1,6 @@
 {
   "name": "@red-cup-engineering/a2a-task-state-custody-service",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "module",
   "description": "Network-authoritative A2A task-state custody and lookup over Cloudflare R2.",
   "exports": {
@@ -15,7 +15,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@red-cup-engineering/resource-brokerage-service-section": "2.0.4"
+    "@red-cup-engineering/resource-brokerage-service-section": "2.0.5"
   },
   "repository": {
     "type": "git",
