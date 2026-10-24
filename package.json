@@ -15,7 +15,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@red-cup-engineering/cloudflare-r2-engineering-services-section": "workspace:*"
+    "@red-cup-engineering/cloudflare-r2-services-section": "workspace:*"
   },
   "repository": {
     "type": "git",
